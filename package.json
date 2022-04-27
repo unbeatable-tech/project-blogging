@@ -1,0 +1,23 @@
+{
+  "name": "project1",
+  "version": "1.0.0",
+  "description": "Repository for backend cohort - Uranium",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unbeatable-tech/project-blogging.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unbeatable-tech/project-blogging/issues"
+  },
+  "homepage": "https://github.com/unbeatable-tech/project-blogging#readme",
+  "dependencies": {
+    "express": "^4.18.0",
+    "mongoose": "^6.3.1"
+  }
+}

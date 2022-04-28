@@ -7,39 +7,28 @@ const BlogModel = require('../model/BlogModel')
 
 // This is the second Api where we can create a blog 
 
-const createBlog=async function(req,res){
 
-   try{
+const createBlog = async function (req, res) { 
+    let data = req.body
+    let condition = await authorModel.findById(data.authorId)
+    if (condition) {
+        if (data.isPublished == true) {
+            data.publishedAt = Date.now()
+            let savedData = await BlogModel.create(data)
 
-     let data=req.body.authorId
-     let date=Date()
-     if(!data){
-         return res.status(404).send({status:false,msg:"pls add authorid"})
-     }
-     let sData=await authorModel.findById(authorId).select({_id:1})
+            res.status(201).send({ msg: savedData })
 
+        }
+        else  {
+            let savedData = await BlogModel.create(data)
+            res.status(201).send({ msg: savedData })
+        }
 
-if(!sdata){return res.status(403).send({status:false,msg:"Add valid Author id"}) }
-
-req.body.publishedAt = date;
-    req.body.isPublished = true;
-  
-let saveddata= req.body
-let savedata=await blogModel.create(saveddata)
-res.status(201).send({status:true,msg:savedata})
-
-
-   }
-catch(err){
-    console.log(err)
-    res.status(500).send({status:false,msg:err.message})
-}
-
-
+    } else {
+        res.status(400).send({ status: false, msg: "authorId is not present" })
+    }
 }
 module.exports.createBlog=createBlog
-
-
 // this is the 3rd api//
 const getBlog = async function (req, res) { 
     let data = req.query
@@ -109,7 +98,7 @@ module.exports.deleteBlog=deleteBlog
 
 //this is the 6th api 
 const deletebyquery = async function (req, res) {
-    data = req.query
+   let data = req.query
     
     console.log(data)
     let find = await BlogModel.findOne(data)

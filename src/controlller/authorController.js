@@ -1,4 +1,4 @@
-const authormodel = require('../model/authorModel')
+const authorModel = require('../model/authorModel')
 
 
 const createAuthor=async function(req,res){
@@ -9,7 +9,7 @@ const createAuthor=async function(req,res){
 
         let data=req.body
         if(data){
-            let savedData=await authorModel.create(data)
+            let savedData= await authorModel.create(data)
             res.status(201).send({status:true,mgs:savedData})
         }
         else{

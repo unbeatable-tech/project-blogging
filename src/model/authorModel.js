@@ -1,4 +1,5 @@
 const mongoose= require('mongoose')
+const validator = require('validator')
 
 const authorSchema=new mongoose.Schema({
 
@@ -23,20 +24,15 @@ title:{
     enum:["Mr","Mrs","Miss"],
     trim:true,
 },
-email:{
-    type:String,
-unique:true,
-trim :true,
+email: {
+    type: String,
+    unique: true,
+    required : true,
+    validate(value){
+        if (!validator.isEmail(value)){
+            throw new Error("invalid email");
+        }}
 
-lowercase:true,
-validate:{
-    validator:function(v){
-        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-
-    },
-    required:[true,"Email required"]
-
-}
 
 
 

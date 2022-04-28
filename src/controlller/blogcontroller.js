@@ -73,7 +73,8 @@ const updateBlog = async function (req, res) {
         console.log(checkId)
         if (checkId) {
             if (checkId.isDeleted === false) {
-                let check = await BlogModel.findByIdAndUpdate(getId, { $push: { tags: data.tags, subcategory: data.subcategory }, title: data.title, body: data.body, category: data.category }, { new: true })
+                let check = await BlogModel.findByIdAndUpdate(getId, { $push: { tags: data.tags, subcategory: data.subcategory }, title: data.title, body: data.body, category: data.category,isPublished: true,
+                    publishedAt: Date.now(), }, { new: true })
                 res.status(200).send({ status: true, msg: check })
             }
             else {
@@ -99,7 +100,7 @@ const deleteBlog = async function (req, res) {
     
     let blog = await BlogModel.findById(blogId)
 
-    if (!blog) { return res.status(404).send("NOT A VALID BLOG ID") }
+    if (!blog) { return res.status(404).send({status:false,msg:"NOT A VALID BLOG ID"}) }
     if (blog.isDeleted == false) {
         let save = await BlogModel.findOneAndUpdate({ _id: blogId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
 
@@ -125,8 +126,8 @@ const deletebyquery = async function (req, res) {
     console.log(find)
     if (!find) { return res.status(404).send({ status: false, msg: "Blog is not created" }) }
     if(find.isDeleted==true){return res.status(400).send({status:false,msg:"THIS DOCUMENT Is deleted"})}
-    let saved = await BlogModel.updateMany( data ,{ $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
-    res.status(200).send({ status: true, msg: saved })
+    let saved = await BlogModel.updateMany( data ,{ $set: { isDeleted: true, deletedAt: Date.now() } },{ new: true })
+    res.status(200).send({ status: true, msg: "Blog is Deleted"})
 
     }
 

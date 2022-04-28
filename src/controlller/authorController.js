@@ -4,6 +4,8 @@ const authorModel = require('../model/authorModel')
 const createAuthor=async function(req,res){
 
 
+
+
     try{
 
 
@@ -20,6 +22,13 @@ const createAuthor=async function(req,res){
         console.log(error)
         res.status(500).send({status:false,msg:error.message})
     }
+
+
 }
+
+
+
+
+ 
 
 module.exports.createAuthor=createAuthor

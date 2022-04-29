@@ -19,8 +19,8 @@ const blogSchema = new mongoose.Schema({
         ref: 'Author'
     },
     tags: [{
-         type: String,
-          trim: true 
+        type: String,
+        trim: true
     }],
     category: {
         type: String,
@@ -28,8 +28,8 @@ const blogSchema = new mongoose.Schema({
         required: true
     },
     subcategory: [{
-         type: String,
-          trim: true 
+        type: String,
+        trim: true
     }],
     deletedAt: Date,
     isDeleted: {

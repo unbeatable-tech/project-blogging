@@ -8,13 +8,13 @@ const middleWare=require("../Middleware/middleware")
 
 router.post('/createAuthor', AuthorController.createAuthor)
 router.post('/login',loginController.login)
-router.post('/blog',middleWare.mid, BlogController.createBlog)
-router.get('/getBlog',middleWare.mid, BlogController.getBlog)
+router.post('/blog',middleWare.midAuthentication, BlogController.createBlogs)
+router.get('/getBlog',middleWare.midAuthentication, BlogController.getBlogs)
 
 
-router.put('/blogs/:blogId',middleWare.mid, BlogController.updateBlog)
-router.delete('/blogs/:blogId',middleWare.mid, BlogController.deleteBlog)
-router.delete('/blogs',middleWare.mid, BlogController.deletebyquery)
+router.put('/blogs/:blogId',middleWare.midAuthentication,middleWare.midAuthoriztion, BlogController.updateBlogs)
+router.delete('/blogs/:blogId',middleWare.midAuthentication,middleWare.midAuthoriztion, BlogController.deleteBlogByid)
+router.delete('/blogs',middleWare.midAuthentication, BlogController.deleteBlogByQuerConditoin)
 
 
 

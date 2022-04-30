@@ -45,7 +45,7 @@ if(blogs.isDeleted===true){
     return res.status(404).send({status:false,msg:"No such blog found Blog is already deleted"})
 }
        
-let verifiedToken=jwt.verify(jwtToken,"Group14")
+let verifiedToken=jwt.verify(jwtToken,"projectOne-Group14")
 if(verifiedToken.authorId !=blogs.authorId)
 res.send(403).status({status:false,msg:"Unauthorize Access"})
 

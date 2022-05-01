@@ -59,7 +59,7 @@ const getBlog = async function (req, res) {
     if (blogs.length > 0) {
         return res.status(200).send({ status: true, data: blogs });
     } else {
-        return res.status(400).send({ status: false, msg: "not found" });
+        return res.status(400).send({ status: false, msg: "No such blog is found!" });
     }
 }catch (error) {
     console.log("This is the error :", error)
@@ -182,8 +182,10 @@ const deletebyquery = async function (req, res) {
         return res.status(400).send({ status: false, msg: "Already deleted" });
       } else res.status(200).send({ status: true, data: `(${allblog.modifiedCount}`==1  ? `${allblog.modifiedCount}-BLOG DELETED` : `${allblog.modifiedCount}-BLOGS DELETED` });
     
-     } catch (err) {
-    res.status(500).send({ msg: err.message });
-  }
+     } catch (error) {
+      console.log("This is the error :", error)
+      res.status(500).send({ msg: "Error", error: error.message })
+    }
+  
 };
 module.exports = { createBlog, getBlog, updateBlog, deleteBlog, deletebyquery };

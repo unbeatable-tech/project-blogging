@@ -12,9 +12,9 @@ let createauthor = async function (req, res) {
         // VALIDATION
 
 
-        if (!check.fName) 
+        if (!check.fname) 
         { return res.status(400).send({ status: false, msg: "pls enter fisrt name" }) }
-        if (!check.lName)
+        if (!check.lname)
          { return res.status(400).send({ status: false, msg: "pls enter last name " }) }
         if (!check.title)
          { return res.status(400).send({ status: false, msg: " pls enter title" }) }

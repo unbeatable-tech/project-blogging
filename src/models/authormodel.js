@@ -6,8 +6,8 @@ const validator = require('validator')
 
 
 const AuthorSchema = new mongoose.Schema({
-	fName: { type: String, required: true,trim :true },
-	lName: { type: String, required: true,trim :true },
+	fname: { type: String, required: true,trim :true },
+	lname: { type: String, required: true,trim :true },
 	title: {
 		type: String, required: true,
 		enum: ["Mr", "Mrs", "Miss"]

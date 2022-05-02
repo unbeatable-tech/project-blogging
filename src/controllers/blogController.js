@@ -178,13 +178,18 @@ const deletebyquery = async function (req, res) {
       let check = await BlogModel.updateMany(
         
           
+        {
+          $and: [
             data,
             { authorId: decodedtoken.authorId },
             { isDeleted: false },
+          ],
+        },
           
         
-        {$set :{isDeleted: true, deletedAt: Date.now()} }
+       { $set :{isDeleted: true, deletedAt: Date.now()} }
       );
+      console.log(check)
 
       if (check.modifiedCount == 0) {
         return res.status(400).send({ status: false, msg: "No such blog exist" });

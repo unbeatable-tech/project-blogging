@@ -2,7 +2,7 @@ const req = require("express/lib/request");
 const authormodel = require("../models/authormodel");
 const Blogmodel = require("../models/Blogmodel");
 const mongoose = require("mongoose");
-const isValidObjectId = (objectId) => mongoose.Types.ObjectId.isValid(objectId);
+
 const jwt = require("jsonwebtoken");
 
 const authentication = async function (req, res, next) {
@@ -14,9 +14,7 @@ const authentication = async function (req, res, next) {
   }
   let decodedtoken = jwt.verify(token, "Group-14");
 
-  if(!decodedtoken){
-    return res.status(401).send({status:false,msg:"Authentication failed"})
-  }
+ 
   req.decodedtoken = decodedtoken;
 
   next();
@@ -27,9 +25,7 @@ const authorize = async function (req, res, next) {
   let get = await Blogmodel.findById(blogId).select({ authorId: 1, _id: 0 });
   if(!get){return res.status(400).send({ status: false, msg: "Please enter valid Blog id" });}
 
-  if(get.isDeleted==true){
-    return res.status(404).send({status:false,msg:"NO such blog found or Blog is already deleted"})
-  }
+ 
   
   let token = req.headers["x-api-key"];
   if (!token) {

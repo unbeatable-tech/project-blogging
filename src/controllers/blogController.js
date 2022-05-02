@@ -7,10 +7,13 @@ const Blogmodel = require("../models/Blogmodel");
 const isValidObjectId = (objectId) => mongoose.Types.ObjectId.isValid(objectId);
 
 
-// third api to create blog
+//third api to create blog
 const createBlog = async function (req, res) {
   try {
     let data = req.body
+    let decodedtoken= req.decodedtoken
+
+if(decodedtoken.authorId !== data.authorId) return res.status(400).send({status:false,msg : "you are not authorized"})
    
 
     if (data.title && data.body && data.authorId && data.category) {
@@ -35,7 +38,8 @@ const createBlog = async function (req, res) {
   }
 
 }
-// fourth api to get blog
+//fourth api to get blog
+
 const getBlog = async function (req, res) {
   try {
     let filter = {
@@ -66,22 +70,22 @@ const getBlog = async function (req, res) {
     res.status(500).send({ msg: "Error", error: error.message })
   }
 };
-
-//fifth api to  update data 
+//fifth api to update blog
+ 
 const updateBlog = async function (req, res) {
   try {
 
 
-    let getId = req.params.blogId;
+    let get = req.params.blogId;
     let data = req.body;
     console.log(data)
-    let checkId = await BlogModel.findById(getId);
-    if (checkId) {
-      if (checkId.isDeleted === false) {
+    let find = await BlogModel.findById(get);
+    if (find) {
+      if (find.isDeleted === false) {
 
 
-        let check = await BlogModel.findByIdAndUpdate(
-          getId,
+        let find1 = await BlogModel.findByIdAndUpdate(
+          get,
           {
             $push: { tags: data.tags, subcategory: data.subcategory },
             title: data.title,
@@ -93,11 +97,11 @@ const updateBlog = async function (req, res) {
           { new: true }
         );
 
-        let a = check.tags.flat();
-        let b = check.subcategory.flat();
+        let a = find1.tags.flat();
+        let b = find1.subcategory.flat();
         console.log(a);
-        let check2 = await BlogModel.findByIdAndUpdate(
-          getId,
+        let find2 = await BlogModel.findByIdAndUpdate(
+          get,
           {
             tags: a,
             subcategory: b,
@@ -106,34 +110,34 @@ const updateBlog = async function (req, res) {
         );
 
 
-        res.status(200).send({ status: true, msg: check2 });
+        res.status(200).send({ status: true, msg: find2 });
       } else {
         res
           .status(400)
-          .send({ status: false, msg: "CANT UPDATE , IT IS DELETED" });
+          .send({ status: false, msg: "Deleted already " });
       }
     } else {
       res
         .status(400)
-        .send({ status: false, msg: "Please enter valid Blog id" });
+        .send({ status: false, msg: "Please add valid Blog id" });
     }
   } catch (error) {
     console.log("This is the error :", error)
     res.status(500).send({ msg: "Error", error: error.message })
   }
 };
+//sixth api to delete blog by id
 
-//sixth api delete by id
 const deleteBlog = async function (req, res) {
   try {
     let blogId = req.params.blogId;
     if (!blogId) {
-      return res.status(404).send("KINDLY ADD BLOG ID");
+      return res.status(404).send("please add Blog id");
     }
     let blog = await BlogModel.findById(blogId);
 
     if (!blog) {
-      return res.status(404).send("NOT A VALID BLOG ID");
+      return res.status(404).send("please add valid BlogId");
     }
     if (blog.isDeleted == false) {
       let save = await BlogModel.findOneAndUpdate(
@@ -146,13 +150,17 @@ const deleteBlog = async function (req, res) {
 
       return res.status(200).send({ msg: save });
     } else {
-      res.status(404).send({ status: false, msg: "already deleted" });
+      res.status(404).send({ status: false, msg: "Already Deleted Blog Document" });
     }
-  } catch (error) {
+  }
+ catch (error) {
     console.log("This is the error :", error)
     res.status(500).send({ msg: "Error", error: error.message })
   }
 };
+
+//seventh api to delete blog by query params 
+ 
 
 const deletebyquery = async function (req, res) {
   try {
@@ -161,26 +169,26 @@ const deletebyquery = async function (req, res) {
      let decodedtoken=req.decodedtoken;
     
 
-    let findblog = await BlogModel.find({
-      $and: [data, { authorId: decodedtoken.authorId }],
+    let blog = await BlogModel.find({
+       data,  authorId: decodedtoken.authorId 
     });
-    if (findblog.length == 0)
-      return res.send({ status: false, msg: "YOU ARE NOT AUTHORISED" });
+    if (blog.length == 0)
+      return res.status(403).send({ status: false, msg: "you are not authorized" });
     
-      let allblog = await BlogModel.updateMany(
-        {
-          $and: [
+      let check = await BlogModel.updateMany(
+        
+          
             data,
             { authorId: decodedtoken.authorId },
             { isDeleted: false },
-          ],
-        },
+          
+        
         {$set :{isDeleted: true, deletedAt: Date.now()} }
       );
 
-      if (allblog.modifiedCount == 0) {
-        return res.status(400).send({ status: false, msg: "Already deleted" });
-      } else res.status(200).send({ status: true, data: `(${allblog.modifiedCount}`==1  ? `${allblog.modifiedCount}-BLOG DELETED` : `${allblog.modifiedCount}-BLOGS DELETED` });
+      if (check.modifiedCount == 0) {
+        return res.status(400).send({ status: false, msg: "No such blog exist" });
+      } else res.status(200).send({ status: true, data:'Blog has been Deleted' });
     
      } catch (error) {
       console.log("This is the error :", error)

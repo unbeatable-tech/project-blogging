@@ -10,7 +10,7 @@ const authentication = async function (req, res, next) {
   
   let token = req.headers["x-api-key"];
   if (!token) {
-    return res.status(400).send({ status: false, msg: "KINDLY ADD TOKEN" });
+    return res.status(400).send({ status: false, msg: "please add token" });
   }
   let decodedtoken = jwt.verify(token, "Group-14");
 

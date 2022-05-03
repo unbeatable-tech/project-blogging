@@ -12,7 +12,7 @@ const authentication = async function (req, res, next) {
   if (!token) {
     return res.status(400).send({ status: false, msg: "please add token" });
   }
-  let decodedtoken = jwt.verify(token, "Group-14");
+  let decodedtoken = jwt.verify(token, "Group-14",);
 
  
   req.decodedtoken = decodedtoken;

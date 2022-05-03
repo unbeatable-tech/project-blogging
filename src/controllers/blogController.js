@@ -3,41 +3,46 @@ let BlogModel = require("../models/Blogmodel");
 const jwt = require("jsonwebtoken");
 
 const mongoose = require("mongoose");
-const Blogmodel = require("../models/Blogmodel");
-const isValidObjectId = (objectId) => mongoose.Types.ObjectId.isValid(objectId);
+
+
 
 
 //third api to create blog
 const createBlog = async function (req, res) {
   try {
-    let data = req.body
-    let decodedtoken= req.decodedtoken
-
-if(decodedtoken.authorId !== data.authorId) return res.status(400).send({status:false,msg : "you are not authorized"})
+    let data=req.body
    
+    let decodedtoken= req.decodedtoken
+    //VALIDATION
+    if(!data.title)return res.status(400).send({status :false , msg:" PLEASE ENTER TITLE"})
+    if(!data.body)return res.status(400).send({status :false, msg:" PLEASE ENTER BODY"})
+    if(!data.category)return res.status(400).send({status :false , msg:" PLEASE ENTER CATEGORY"})
+    if(!data.authorId) return res.status(400).send({status :false , msg:" PLEASE ENTER AUTHOR ID"})
+    
+    if(decodedtoken.authorId !== data.authorId) return res.status(400).send({status:false,msg : "YOU ARE NOT AUTHORIZED TO CREATE BLOG WITH THIS AUTHOR ID"})
 
-    if (data.title && data.body && data.authorId && data.category) {
 
-      if (!data.isPublished) {
-        let blogData = await Blogmodel.create(data);
-        return res.status(201).send({ status: true, data: blogData });
+    //LOGIC
+    let condition = await authorModel.findById(data.authorId);
+    if (condition) {
+      if (data.isPublished == true) {
+        data.publishedAt = Date.now();
+        
+        let savedData = await BlogModel.create(data);
+        res.status(201).send({ status: true,data: savedData });
       } else {
-        data.publishedAt = new Date();
-        let blogData = await Blogmodel.create(data);
-        return res.status(201).send({ status: true, data: blogData });
+        let savedData = await BlogModel.create(data);
+        res.status(201).send({ status: true,data: savedData });
       }
-
     } else {
-      return res.status(400).send({ status: false, msg: "Required field missing" });
+      res.status(400).send({ status: false, msg: "authorId is not present" });
     }
+  } catch (error) {
+    res.status(500).send({ status: false, msg: error.message });
   }
+};
 
-  catch (error) {
-    console.log("This is the error :", error)
-    res.status(500).send({ msg: "Error", error: error.message })
-  }
-
-}
+     
 //fourth api to get blog
 
 const getBlog = async function (req, res) {
@@ -59,7 +64,7 @@ const getBlog = async function (req, res) {
         filter["subcategory"] = req.query.subcategory;
     }
 
-    const blogs = await Blogmodel.find(filter);
+    const blogs = await BlogModel.find(filter);
     if (blogs.length > 0) {
         return res.status(200).send({ status: true, data: blogs });
     } else {
@@ -126,6 +131,9 @@ const updateBlog = async function (req, res) {
     res.status(500).send({ msg: "Error", error: error.message })
   }
 };
+
+
+
 //sixth api to delete blog by id
 
 const deleteBlog = async function (req, res) {
@@ -167,6 +175,9 @@ const deletebyquery = async function (req, res) {
     data = req.query; 
 
      let decodedtoken=req.decodedtoken;
+     if(Object.keys(data).length == 0)
+     return res.status(400).send({status:false,msg:"Please add queries"})
+     data.isDeleted = false;
     
 
     let blog = await BlogModel.find({
@@ -201,4 +212,5 @@ const deletebyquery = async function (req, res) {
     }
   
 };
+
 module.exports = { createBlog, getBlog, updateBlog, deleteBlog, deletebyquery };

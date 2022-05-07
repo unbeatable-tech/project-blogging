@@ -1,67 +1,44 @@
 const authormodel = require('../models/authormodel')
-const jwt = require('jsonwebtoken')
 
-// first api to create author
+
 let createauthor = async function (req, res) {
     try {
-        let check = req.body
-
-
+        let data = req.body
+        // let regex =/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i
+        let regex = /^[a-zA-Z ]{2,30}$/
         let emailregex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
+        if (data.title=="Mr"||data.title=="Mrs"||data.title=="Miss"){
 
         // VALIDATION
-
-
-        if (!check.fname) { return res.status(400).send({ status: false, msg: "pls enter fisrt name" }) }
-        if (!check.lname) { return res.status(400).send({ status: false, msg: "pls enter last name " }) }
-        if (!check.title) { return res.status(400).send({ status: false, msg: " pls enter title" }) }
-        if (!check.email) { return res.status(400).send({ status: false, msg: "pls enter email" }) }
-        if (!check.password) { return res.status(400).send({ status: false, msg: "pls enter passowrd" }) }
-
+        if (!data.fname) { return res.status(400).send({ status: false, msg: "FIRST NAME REQUIRED" }) }
+        if (!data.lname) { return res.status(400).send({ status: false, msg: "LAST NAME REQUIRED  " }) }
+        if (!data.title) { return res.status(400).send({ status: false, msg: "Add title" }) }
+     
+        if (!data.email) { return res.status(400).send({ status: false, msg: "EMAIL CANT BE EMPTY" }) }
+        if (!data.password) { return res.status(400).send({ status: false, msg: "PASSWORD CAN'T BE EMPTY" }) }
+     
         // REGEX VALIDATION
-
-
-        if (!check.email.match(emailregex))
-            return res.status(400).send({ status: false, msg: "Email is not Valid" })
-        let duplicate = await authormodel.findOne({ email: check.email })
+        if (!data.fname.match(regex)) return res.status(400).send({ status: false, msg: "FIRSTNAME SHOULD ONLY CONATIN ALPHABATS AND LENTH MUST BE IN BETWEEN 2-30" })
+        if (!data.lname.match(regex)) return res.status(400).send({ status: false, msg: "LASTNAME SHOULD ONLY CONATIN ALPHABATS AND LENTH MUST BE IN BETWEEN 2-30" })
+        if (!data.email.match(emailregex)) return res.status(400).send({ status: false, msg: "EMAIL IS NOT IN VALID FORMAT" })
+       
+        
+        const duplicate = await authormodel.findOne({ email: data.email })
         if (duplicate) {
-            return res.status(400).send({ status: false, msg: "email already exist" })
+            return res.status(400).send({ status: false, msg: "EMAIL ALREADY EXISTS" })
         }
+        
         //LOGIC
-        let save = await authormodel.create(check)
-        res.status(200).send({ msg: save })
+        let save = await authormodel.create(data)
+        res.status(201).send({ status:true,data: save })}
+        else return res.status(400).send({status:false,msg:"title can be Mr,Mrs,Miss"})
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
     }
 }
 
-// second api to create login 
-
-const login = async function (req, res) {
-    let check=req.body
-    let email = req.body.email
-    let password = req.body.password
-    let emailregex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
-
-    /*********************validation************************ */
-    if (!email) { return res.status(400).send({ status: false, msg: "Add Email id" }) }
-
-    if (!check.email.match(emailregex))
-        return res.status(400).send({ status: false, msg: "Email is not Valid" })
-
-    if (!password) { return res.status(400).send({ status: false, msg: "Add Password" }) }
-
-    /******************validation ends*************/
-
-    let get = await authormodel.findOne({ email: email, password: password })
-    if (!get) { return res.status(400).send({ status: false, msg: "your email and password is incorrect" }) }
-    let token = jwt.sign({ authorId: get._id.toString() }, "Group-14")
-    res.setHeader("x-api-key", token)
-    res.status(200).send({ status: true, msg: "you are successfully logged in", data: token })
-}
 
 
 
 
-module.exports.createauthor = createauthor
-module.exports.login = login 
+module.exports = { createauthor }
